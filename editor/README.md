@@ -13,3 +13,5 @@ $ yarn
 $ yarn build
 $ yarn start
 ```
+
+> Remeber to fill the `.env` with data from [Spotify Dashboard](https://developer.spotify.com/dashboard/)!

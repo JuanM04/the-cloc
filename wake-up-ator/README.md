@@ -26,6 +26,8 @@ $ sudo python3 -m pip install --force-reinstall adafruit-blinka==5.3.0
 $ sudo python3 main.py
 ```
 
+> Remeber to fill the `.env` with `https://thecloc.juanm04.com` or your development server. And also, you need to generate your own certs (just go to the project folder and run the `gen-cert.sh` script).
+
 **Crontab**
 ```
 15 * * * * /home/pi/the-cloc/main.sh
@@ -41,7 +43,7 @@ After=multi-user.target
 WorkingDirectory=/home/pi/the-cloc
 User=USER
 Type=idle
-ExecStart=/usr/bin/python3 editor-server.py &> /dev/null
+ExecStart=/usr/bin/python3 editor-server.py
 Restart=always
 
 [Install]
