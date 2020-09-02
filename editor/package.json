@@ -9,7 +9,7 @@
   },
   "dependencies": {
     "@geist-ui/react": "^2.0.1",
-    "color-thief-node": "^1.0.3",
+    "colorthief": "^2.3.2",
     "next": "9.5.2",
     "react": "16.13.1",
     "react-dom": "16.13.1",

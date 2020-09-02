@@ -1,18 +1,31 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import newSpotifyClient from "utils/spotify";
+
+import util from "util";
+import fs from "fs";
+import stream from "stream";
 // @ts-ignore
-import { getColorFromURL } from "color-thief-node";
+import ColorThief from "colorthief";
 
 const getColor = async (
   album: SpotifyApi.AlbumObjectSimplified
-): Promise<[number, number, number]> =>
-  album.images.length === 0
-    ? [255, 0, 0]
-    : await getColorFromURL(album.images[0].url);
+): Promise<[number, number, number]> => {
+  if (album.images.length === 0) return [255, 0, 0];
+
+  const streamPipeline = util.promisify(stream.pipeline);
+
+  const response = await fetch(album.images[0].url);
+  if (!response.ok)
+    throw new Error(`Error fetching album img: ${response.statusText}`);
+  // @ts-ignore
+  await streamPipeline(response.body, fs.createWriteStream("/tmp/album.jpg"));
+
+  return await ColorThief.getColor("/tmp/album.jpg");
+};
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   if (typeof req.body !== "object" || !req.body.auth || !req.body.uri) {
-    res.status(400).end();
+    res.status(400).send({ error: "Invalid params" });
     return;
   }
 
@@ -30,7 +43,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 
     if (type === "playlist") {
       const playlist = await spotify.getPlaylist(uri);
-      if (playlist.statusCode !== 200) throw null;
+      if (playlist.statusCode !== 200) throw "Playlist doesn't exist";
 
       for (let i = 0; i < 5; i++) {
         const { body: tracks } = await spotify.getPlaylistTracks(uri, {
@@ -53,7 +66,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       }
     } else if (type === "album") {
       const album = await spotify.getAlbum(uri);
-      if (album.statusCode !== 200) throw null;
+      if (album.statusCode !== 200) throw "Album doesn't exist";
 
       for (let i = 0; i < 5; i++) {
         const { body: tracks } = await spotify.getAlbumTracks(uri, {
@@ -72,7 +85,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       }
     } else if (type === "track") {
       const track = await spotify.getTrack(uri);
-      if (track.statusCode !== 200) throw null;
+      if (track.statusCode !== 200) throw "Song doesn't exist";
 
       if (!track.body.is_local && track.body.preview_url) {
         res.send({
@@ -84,8 +97,10 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       }
     }
 
-    throw null;
+    throw "Invalid type. Must be a playlist, album or song";
   } catch (error) {
-    res.status(400).end();
+    res.status(400).send({
+      error: typeof error === "string" ? error : error?.message || error,
+    });
   }
 };
