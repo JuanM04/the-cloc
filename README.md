@@ -1,2 +1,0 @@
-# the-cloc
-HackClub project

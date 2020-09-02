@@ -1,0 +1,5 @@
+data/*
+!data/default.mp3
+.env
+__pycache__
+logs.txt

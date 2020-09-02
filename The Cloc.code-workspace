@@ -1,0 +1,15 @@
+{
+  "folders": [
+    {
+      "name": "Editor",
+      "path": "editor"
+    },
+    {
+      "name": "Wake-up-ator",
+      "path": "wake-up-ator"
+    }
+  ],
+  "settings": {
+    "typescript.tsdk": "Editor/node_modules/typescript/lib"
+  }
+}

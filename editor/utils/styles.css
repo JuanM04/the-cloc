@@ -1,0 +1,8 @@
+main {
+  min-height: 100vh;
+  min-height: -webkit-fill-available;
+  max-width: 420px;
+  margin: auto;
+  box-sizing: border-box;
+  padding: 20px 10px;
+}
