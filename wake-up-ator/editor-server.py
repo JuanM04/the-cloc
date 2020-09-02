@@ -3,8 +3,8 @@ from flask_cors import CORS
 import json
 import os.path
 
+
 app = Flask(__name__)
-app.config.from_object({"DEBUG": False})
 CORS(app)
 
 settings_file = "data/settings.json"
@@ -51,4 +51,8 @@ if __name__ == "__main__":
                 f,
                 indent=4,
             )
-    app.run(host="thecloc.local")
+    app.run(
+        host="thecloc.local",
+        debug=False,
+        ssl_context=("data/cert.crt", "data/cert.key"),
+    )
